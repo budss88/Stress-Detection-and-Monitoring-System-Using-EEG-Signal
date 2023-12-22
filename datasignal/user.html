@@ -1,0 +1,285 @@
+<html>
+<head>
+    <link rel="stylesheet" href="/styles.css"> 
+</head>
+
+<body>
+    <div class="header">
+        <a href="https://filkom.ub.ac.id" class="header"></a>
+        <div class="header-right">
+            <h3>Monitoring Kamera</h3>
+        </div>
+    
+    </div>
+    <div class="cards">
+        <div class="card">
+            <img id="ESP32-1" src=""/>
+            <h3 style="text-align: left;"><b>Kamera Kiri <span class="dot" id="kamera_1_red_dot" style="visibility: hidden;"></span></b></h3>
+            <button class="button" id="kamera_1_aktif" onclick="buttonFunc('kamera_1_aktif')">Pause</button>
+            <button class="button" id="kamera_1_rekam" onclick="saveFunc('kamera_1_aktif')" style="background-color: #008cba;">Simpan Gambar</button>
+        </div>
+
+        <div class="card">
+            <img id="ESP32-2" src="" />
+            <h3 style="text-align: left;"><b>Kamera Tengah <span class="dot" id="kamera_2_red_dot" style="visibility: hidden;"></span></b></h3>
+            <button class="button" id="kamera_2_aktif" onclick="buttonFunc('kamera_2_aktif')">Pause</button>
+            <button class="button" id="kamera_2_rekam" onclick="saveFunc('kamera_2_aktif')" style="background-color: #008cba;">Simpan Gambar</button>
+        </div>
+
+        <div class="card">
+            <img id="ESP32-3" src="" />
+            <h3 style="text-align: left;"><b>Kamera Kanan <span class="dot" id="kamera_3_red_dot" style="visibility: hidden;"></span></b></h3>
+            <button class="button" id="kamera_3_aktif" onclick="buttonFunc('kamera_3_aktif')">Pause</button>
+            <button class="button" id="kamera_3_rekam" onclick="saveFunc('kamera_3_aktif')" style="background-color: #008cba;">Simpan Gambar</button>
+        </div>
+    </div>
+    <div id="stress_level_display" style="color: #202020; font-size: 1.17em; font-weight: bold; font-family: 'Archivo'; margin-top: 10px; margin-left: 45px;">
+        <p id="stress_level"></p>
+    </div>
+
+    <script>
+        const img_1 = document.getElementById("ESP32-1");
+        const img_2 = document.getElementById("ESP32-2");
+        const img_3 = document.getElementById("ESP32-3");
+
+        let mediaRecorder_1, mediaRecorder_2, mediaRecorder_3;
+        let chunks_1 = [], chunks_2 = [], chunks_3 = [];
+ 
+        var imageFrame;
+
+        const WS_URL = 'ws://10.200.112.249:8888';
+        const ws = new WebSocket(WS_URL);
+        let urlObject_1, urlObject_2, urlObject_3;
+
+        window["kamera_1_aktif"] = true;
+        window["kamera_2_aktif"] = true;
+        window["kamera_3_aktif"] = true;
+
+        const saveFuncInterval = 50000;
+
+        function updateStressLevel() {
+            fetch('/stress_level')
+                .then(response => response.json())
+                .then(data => {
+                    const stressLevelElement = document.getElementById('stress_level');
+                    stressLevelElement.textContent = `Tingkat Stres: ${data.most_common_stress_level}`;
+                })
+                .catch(error => console.error('Error fetching stress level:', error));
+        }
+        
+        // Memanggil fungsi ini untuk memperbarui data secara periodik
+        setInterval(() => {
+            updateStressLevel();
+        }, 1000 + Math.floor(Math.random() * 1000)); // Menambahkan parameter unik
+        
+
+        function initiateSaveFunc(source) {
+            saveFunc(source);
+            setInterval(() => {
+                saveFunc(source);
+            }, saveFuncInterval);        
+        }
+
+        function startRecording(camera) {
+            const videoElement = document.getElementById(`${camera}_video`);
+            const startButton = document.getElementById(`${camera}_record`);
+            const stopButton = document.getElementById(`${camera}_stop`);
+
+            let mediaStream; // Define the mediaStream variable
+
+            // Determine which camera is being used and assign the appropriate video track
+            if (camera === "kamera_1") {
+                mediaStream = new MediaStream([...video_1.srcObject.getVideoTracks()]);
+            } else if (camera === "kamera_2") {
+                mediaStream = new MediaStream([...video_2.srcObject.getVideoTracks()]);
+            } else if (camera === "kamera_3") {
+                mediaStream = new MediaStream([...video_3.srcObject.getVideoTracks()]);
+            }
+
+            if (mediaStream) {
+                if (camera === "kamera_1") {
+                    mediaRecorder_1 = new MediaRecorder(mediaStream);
+                    mediaRecorder_1.ondataavailable = (e) => {
+                        if (e.data.size > 0) {
+                            chunks_1.push(e.data);
+                        }
+                    };
+                    mediaRecorder_1.onstop = () => {
+                        const blob = new Blob(chunks_1, { type: 'video/webm' });
+                        const url = URL.createObjectURL(blob);
+                        forceDownload(url, `${getFormattedTime("Kamera Kiri")}.webm`);
+                        chunks_1 = [];
+                    };
+                    mediaRecorder_1.start();
+                } else if (camera === "kamera_2") {
+                    // Similar logic for camera 2
+                    mediaRecorder_2 = new MediaRecorder(mediaStream);
+                    mediaRecorder_2.ondataavailable = (e) => {
+                        if (e.data.size > 0) {
+                            chunks_2.push(e.data);
+                        }
+                    };
+                    mediaRecorder_2.onstop = () => {
+                        const blob = new Blob(chunks_2, { type: 'video/webm' });
+                        const url = URL.createObjectURL(blob);
+                        forceDownload(url, `${getFormattedTime("Kamera Tengah")}.webm`);
+                        chunks_2 = [];
+                    };
+                    mediaRecorder_2.start();
+                } else if (camera === "kamera_3") {
+                    // Similar logic for camera 3
+                    mediaRecorder_3 = new MediaRecorder(mediaStream);
+                    mediaRecorder_3.ondataavailable = (e) => {
+                        if (e.data.size > 0) {
+                            chunks_3.push(e.data);
+                        }
+                    };
+                    mediaRecorder_3.onstop = () => {
+                        const blob = new Blob(chunks_3, { type: 'video/webm' });
+                        const url = URL.createObjectURL(blob);
+                        forceDownload(url, `${getFormattedTime("Kamera Kanan")}.webm`);
+                        chunks_3 = [];
+                    };
+                    mediaRecorder_3.start();
+                }
+
+                videoElement.style.display = "block";
+                startButton.style.display = "none";
+                stopButton.style.display = "block";
+            }
+        }
+        
+        function stopRecording(camera) {
+            if (camera === "kamera_1" && mediaRecorder_1) {
+                mediaRecorder_1.stop();
+            } else if (camera === "kamera_2" && mediaRecorder_2) {
+                mediaRecorder_1.stop();
+            } else if (camera === "kamera_3" && mediaRecorder_3) {
+                mediaRecorder_1.stop();
+            }
+        }
+
+        function saveFunc(source){
+            var blobUrl;
+            if (source === "kamera_1_aktif") {
+                blobUrl = img_1.src;
+            } else if (source === "kamera_2_aktif") {
+                blobUrl = img_2.src;
+            } else {
+                blobUrl = img_3.src;
+            }
+
+            if (blobUrl.indexOf("blob") == -1){
+                return;
+            }
+
+            var fileName;
+            if (source === "kamera_1_aktif") {
+                fileName = getFormattedTime("Kamera Kiri") + ".jpeg";
+            } else if (source === "kamera_2_aktif") {
+                fileName = getFormattedTime("Kamera Tengah") + ".jpeg";
+            } else {
+                fileName = getFormattedTime("Kamera Kanan") + ".jpeg";
+            }
+            forceDownload(blobUrl, fileName);
+
+        }
+
+        function getFormattedTime(infoKamera){
+            var today = new Date();
+            var y = today.getFullYear();
+            var m = today.getMonth();
+            var d = today.getDate();
+            var h = today.getHours();
+            var mi = today.getMinutes();
+            var s = today.getSeconds();
+            return infoKamera + "-" + y + "-" + m + "-" + d + "-" + h + "-" + mi + "-" + s;
+        }
+
+        function forceDownload(url, fileName){
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", url, true);
+            xhr.responseType = "blob";
+            xhr.onload = function(){
+                var urlCreator = window.URL || window.webkitURL;
+                var imageUrl = urlCreator.createObjectURL(this.response);
+                
+                var tag = document.createElement("a");
+                tag.href = imageUrl;
+                tag.download = fileName;
+                document.body.appendChild(tag);
+                tag.click();
+                document.body.removeChild(tag);
+            };
+            xhr.send();
+        }
+
+        function buttonFunc(source){
+            var x = document.getElementById(source);
+            if (x.innerHTML === "Pause"){
+                x.innerHTML = "Aktifkan";
+                window[source] = false;
+                initiateSaveFunc(source);
+            } else {
+                x.innerHTML = "Pause";
+                window[source] = true;
+            }
+        }
+
+        function hideRedDot(){
+            document.getElementById("kamera_1_red_dot").style.visibility = "hidden";
+            document.getElementById("kamera_2_red_dot").style.visibility = "hidden";
+            document.getElementById("kamera_3_red_dot").style.visibility = "hidden";
+        }
+
+        setInterval(hideRedDot, 2000);
+
+        ws.onopen = () => {
+            console.log(`Terhubung ke ${WS_URL}`);
+            ws.send("WEB_CLIENT");
+        };
+
+        ws.onmessage = async (message) => {
+            const arrayBuffer = message.data;
+            
+            var blobObj = new Blob([arrayBuffer]);
+            const buf = await blobObj.arrayBuffer();
+            var uint8 = new Uint8Array(buf.slice(12, 13));
+            var currentCam = uint8[0];
+            console.log("current Cam: ", currentCam);
+
+            if (currentCam == 1){
+                imageFrame = img_1;
+                document.getElementById("kamera_1_red_dot").style.visibility = "visible";
+                if (!window["kamera_1_aktif"]) return;
+                if (urlObject_1) {
+                    URL.revokeObjectURL(urlObject_1);
+                }
+                
+                urlObject_1 = URL.createObjectURL(blobObj);
+                imageFrame.src = urlObject_1;
+            } else if (currentCam == 2){
+                imageFrame = img_2;
+                document.getElementById("kamera_2_red_dot").style.visibility = "visible";
+                if (!window["kamera_2_aktif"]) return;
+                if (urlObject_2) {
+                    URL.revokeObjectURL(urlObject_2);
+                }
+                
+                urlObject_2 = URL.createObjectURL(blobObj);
+                imageFrame.src = urlObject_2;
+            } else {
+                imageFrame = img_3;
+                document.getElementById("kamera_3_red_dot").style.visibility = "visible";
+                if (!window["kamera_3_aktif"]) return;
+                if (urlObject_3) {
+                    URL.revokeObjectURL(urlObject_3);
+                }
+                
+                urlObject_3 = URL.createObjectURL(blobObj);
+                imageFrame.src = urlObject_3;
+            }
+        }
+    </script>
+</body>
+</html>

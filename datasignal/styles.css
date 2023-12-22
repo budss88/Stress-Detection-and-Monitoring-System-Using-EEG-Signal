@@ -1,0 +1,93 @@
+@import url('https://fonts.googleapis.com/css?family=Quicksand&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Poppins');
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+@import url('https://fonts.googleapis.com/css?family=Archivo');
+
+html {
+    font-size: 15px;
+    background-color: whitesmoke;
+}
+
+body {
+    margin: 0;
+    color: white;
+}
+
+.header {
+    margin: 0;
+    overflow: hidden;
+    background-color: #002647;
+    padding: 15px 5px;
+    background-image: url('https://filkom.ub.ac.id/wp-content/uploads/2021/03/header_id.png.pagespeed.ce_.ssq-CPanQx.png');
+    background-size: 22%;
+    background-repeat: no-repeat;
+    padding-left: auto;
+    background-position-y: 45%;
+    background-position-x: 3%;
+}
+
+.header a{
+    float: left;
+    color: white ;
+    padding: 12px;
+    text-align: center;
+    font-size: 18px;
+}
+
+.header-right {
+    float: right;
+    padding-right: 25px;
+}
+
+.cards {
+    max-width: 1400px;
+    margin: 0 auto;
+    display:flex;
+    grid-gap: 1rem;
+}
+
+.card {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    background-color: white;
+    color: #202020;
+    padding: 1rem;
+    margin: auto;
+    border: 0px;
+    border-radius: 2px;
+}
+
+h3 {
+    font-family: 'Archivo';
+    text-align: right;
+}
+
+.button {
+    background-color: #30C454;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px  ;
+}
+
+.dot {
+    height: 15px;
+    width: 15px;
+    background-color: #f44336;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* Screen larger than 800px? 2 column */
+@media (min-width: 800px) {
+    .cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .header-right {
+        float: none;
+        text-align: right;
+    }
+}
