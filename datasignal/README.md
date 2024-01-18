@@ -1,4 +1,4 @@
-Seluruh program terintegrasi agar dapat berjalan secara bersamaan. Bahasa yang digunakan adalah C++ untuk program ESP32-Cam, JavaScript untuk program server menggunakan NodeJS, HTML & CSS untuk tampilan website, dan Python untuk pemrosesan data.
+Seluruh program terintegrasi agar dapat berjalan bersamaan secara sekuensial menggunakan multithread. Bahasa yang digunakan adalah C++ untuk program ESP32-Cam, JavaScript untuk program server menggunakan NodeJS, HTML & CSS untuk tampilan website, dan Python untuk pemrosesan data.
 
 Pada Rasberry Pi 3:
 1. (App.py) Digunakan untuk menjalankan seluruh program python yang telah disusun, mulai dari tahap perekaman, pengelohan data sampai menampilkan output.
