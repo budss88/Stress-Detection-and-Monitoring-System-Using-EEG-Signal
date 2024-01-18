@@ -7,6 +7,9 @@ Pada Rasberry Pi 3:
 4. (Label.py) Digunakan untuk mengambil label kelas dari file csv hasil program sebelumnya
 5. (GabungKelas.py) Digunakan untuk menambahkan data hasil kelas kedalam dataset untuk selanjutnya diklasifikasikan
 6. (Klasifikasi.py) Digunakan untuk mengklasifikasikan hasil berupa perbandingan menggunakan KNN antara data training dan data testing untuk mendapatkan tingkat akurasi pada pengujian
+7. (User.html) Digunakan untuk tampilan website
+8. (Server.js) Digunakan untuk server lokal yang menyediakan koneksi http lokal dan koneksi websocket
+9. (Styles.css) Digunakan untuk tampilan website
 
 -------------------------------------------------------------------------------
 1. Hasil dari program Label.py akan ditambahkan kedalam file "most_common_stress_level.JSON" untuk ditampilkan di website
