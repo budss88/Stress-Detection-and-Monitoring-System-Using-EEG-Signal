@@ -13,7 +13,7 @@ class EEGProcessing:
             time.sleep(20)
             # Menjalankan rekaman setelah 20 detik
             self.record_data()
-
+    #Direktori tempat hasil perekaman EEG disimpan
     def record_data(self):
         save_path = "C:\\Users\\Budhi Afrianto\\Downloads\\Skripsi\\Sistem\\Program\\NodeServer\\datasignal\\Data"
         if not os.path.exists(save_path):
@@ -21,7 +21,7 @@ class EEGProcessing:
 
         output_filename = "*.csv"
         current_directory = os.getcwd()
-
+    #Jika direktori sudah ditentukan, selanjutnya akan merekam data selama 60 detik
         try:
             os.chdir(save_path)
             command = ["muselsl", "record", "--duration", "60"]
@@ -29,7 +29,7 @@ class EEGProcessing:
             process.communicate()
             time.sleep(2)
             recorded_file = os.path.join(current_directory, "*.csv")
-
+    #Menyimpan hasil data perekaman ke path yang sudah ditentukan
             if os.path.exists(recorded_file):
                 destination_file = os.path.join(save_path, output_filename)
                 os.rename(recorded_file, destination_file)
@@ -43,7 +43,7 @@ class EEGProcessing:
 
         # Menunggu sebelum mengulang
         time.sleep(10)  # Ganti nilai ini sesuai kebutuhan, misalnya 10 detik
-
+#Menjalankan seluruh proses secara sekuensial atau berurut berdasarkan program yang sudah dibuat dan secara terus menerus berulang
     def run_all_programs(self):
         self.run_processing()
         self.run_feature_extraction()
