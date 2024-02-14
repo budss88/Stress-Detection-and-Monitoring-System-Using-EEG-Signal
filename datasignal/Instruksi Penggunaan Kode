@@ -1,0 +1,23 @@
+1. Akuisisi Data EEG Muse Headband:
+- Memerlukan instalasi library muselsl pada sistem atau tempat akuisisi dan pengolahan data
+- Memerlukan koneksi bluetooth (Otomatis ketika masing-masing bluetooth pada device sudah dinyalakan)
+- Menggunakan bahasa pemrograman Python
+
+2. Akuisisi Data Gambar ESP32-Cam:
+- Tidak memerlukan instalasi apapun, hanya konfigurasi resolusi gambar yang optimal, koneksi wifi dan websocket
+- Menggunakan bahasa pemrograman C++
+
+3. Website:
+- Memerlukan instalasi NVM dan Node.Js untuk membuat dan menjalankan servernya
+- Menggunakan HTML/CSS dan bahasa pemrograman Javascript untuk membuat tampilan websitenya
+- Untuk menjalankan servernya menggunakan command node pada file js yang menjadi server
+
+4. Pengolahan Data:
+Memerlukan Library:
+- Pandas
+- Numpy
+- Matplotlib
+- Sklearn dan Scipy
+- Popen dan PIPE
+
+Untuk Setting PATH dan folder dataset tinggal menyesuaikan dengan kodingan yang ada
